@@ -1,6 +1,3 @@
-
-# A very simple Flask Hello World app for you to get started with...
-
 from flask import Flask
 from flask import request
 import json
@@ -55,7 +52,8 @@ def index():
 
     try:
         result = str(getWeather(lat, lon))
-        result = str(result)
+        result = "{'raintype': '" + str(result) + "'}'"
+        result = str.encode(result)
     except:
         result = "{'Error': 'Can't acces the WeatherAPI'}'"
         result = str.encode(result)
@@ -64,13 +62,16 @@ def index():
     try:
         downlink = dictPart["downlink_url"]
         dev_id = dictPart['dev_id']
-        result_weather = {"raintype": str(result)}
-        data1 = {"dev_id":dev_id,"payload_fields":result_weather}
+        print("post data:", downlink, dev_id)
+        result_weather = "{'raintype': '" + str(result) + "'}'"
+        data1 = {"dev_id":dev_id,"payload_raw":"AQE="}
         print(result)
-        print(data1)
+        print("Lets post:")
         r = requests.post(downlink, json=data1)
+        print("postdone")
         print(r.status_code)
         print(r.content)
+        print("postdone complete")
     except:
         result = "{'Error': 'Error, cant post result'}'"
         result = str.encode(result)
@@ -83,7 +84,3 @@ def index1():
     '''Just a test for connecting, returns hello world'''
     if(request.method == 'GET'):
         return 'Hello UserGET'
-
-if __name__ == '__main__':
-    #run webserver
-    app.run(debug=True, use_reloader=False)
